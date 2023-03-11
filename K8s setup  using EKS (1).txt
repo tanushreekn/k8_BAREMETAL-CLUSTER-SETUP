@@ -1,0 +1,117 @@
+step1:
+Create ec2 role
+create EKS-Admin-policy policy: 
+in JSON  
+
+{
+ "Version": "2012-10-17",
+ "Statement": [
+ {
+ "Effect": "Allow",
+ "Action": [
+ "eks:*"
+ ],
+ "Resource": "*"
+ }
+ ]
+}
+
+
+create CloudFormation-Admin-policy:
+in JSON
+
+{
+ "Version": "2012-10-17",
+ "Statement": [
+ {
+ "Effect": "Allow",
+ "Action": [
+ "cloudformation:*"
+ ],
+ "Resource": "*"
+ }
+ ]
+}
+
+finally, assign the following policies to your above role 
+
+AmazonEC2FullAccess
+IAMFullAccess
+AmazonVPCFullAccess
+CloudFormation-Admin-policy
+EKS-Admin-policy
+(where the last 2 policies are the ones you created above)
+
+Step2:
+  apt update 
+  apt upgrade
+ Install Python : apt install python3
+ install pythonpip: apt install python3-pip
+ pip install --user awscli
+ export PATH=$PATH:/home/$(whoami)/.local/bin
+
+Step3: 
+ mkdir -p  ~/.aws/
+ vi ~/.aws/credentials
+ [default]
+ region=us-east-1
+ output=json
+
+
+Step 4: To install or upgrade eksctl on Linux
+
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+kubectl version --short --client
+
+Step 5: Install kubelet and kubectl
+
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet kubectl=1.22.6-00 
+
+
+Step 6:
+
+eksctl create cluster \
+    --name my-cluster \
+    --version 1.22 \
+    --without-nodegroup
+
+Step 7:
+vi new_eks.yaml
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: my-cluster
+  region: us-east-1
+
+managedNodeGroups:
+  - name: ng-1-workers
+    labels: { role: workers }
+    instanceType: t2.medium
+    desiredCapacity: 2
+    volumeSize: 80
+
+Step 8:
+eksctl create nodegroup --config-file=new_eks.yaml
+
+curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+
+chmod +x ./aws-iam-authenticator
+
+mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+
+aws-iam-authenticator init --config new_eks.yaml
+
+aws-iam-authenticator init --config new_eks.yaml 
+
+aws eks update-kubeconfig --region us-east-1 --name my-cluster
+
+
+
