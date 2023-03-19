@@ -149,12 +149,12 @@ apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 discovery:
   bootstrapToken:
-    token: "bfylv7.eru0byvl2pa9vrl9"
-    apiServerEndpoint: "10.0.0.196:6443"
+    token: "bfylv7.eru0byvl2pa9vrl9"    //change this to as per the token
+    apiServerEndpoint: "10.0.0.196:6443"  //chnage this as per the join number
     caCertHashes:
-      - "sha256:2bb30453a86452cf7ff6ffb273508ce69c8a58c80f6efe99f743f9517f1255d4"
+      - "sha256:2bb30453a86452cf7ff6ffb273508ce69c8a58c80f6efe99f743f9517f1255d4"     //change thge token 
 nodeRegistration:
-  name: ip-10-0-0-29.ap-south-1.compute.internal
+  name: ip-10-0-0-29.ap-south-1.compute.internal       //change the host name 
   kubeletExtraArgs:
   cloud-provider: aws
 EOF
