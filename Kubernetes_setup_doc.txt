@@ -78,7 +78,14 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 # install Calico 
 
 kubectl get nodes
-kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/tigera-operator.yaml
+wget https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/custom-resources.yaml
+//replace cidr with 10.244.0.0/16 in   custom-resources.yaml
+kubectl apply -f custom-resources.yaml
+
+
+//kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+//kubectl delete -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
 
 //kubectl apply -f https://docs.projectcalico.org/manifests/calico-typha.yaml
 //kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/tigera-operator.yaml
